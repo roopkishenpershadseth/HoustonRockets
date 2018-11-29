@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Houston Rockets Test Suite - Roop</title>
+<link rel="stylesheet" type="text/css" href="cssfiles/CSS_Stylesheet.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+</head>
+<body>
+
+<h1><font color="#FF7F50" > Welcome to the Test Suite of Houston Rockets</font></h1>
+<h2><font face="Cambria">List of All Games:</font></h2>
+
+<div id="tableContainer">
+</div>
+
+<div id="gameDetails">
+</div>
+<script type="text/javascript">
+$(document).ready(function() {
+	  $.get("http://localhost:9000/list", function(data, status) {
+		var parseddata = JSON.parse(data.body);
+	    var tbl = $("<table/>").attr("id", "mytable");
+	    $("#tableContainer").append(tbl);
+	    var trID = "<tr><td><b> ID </b></td>";
+	    var trDate = "<td><b>Date</b></td>";
+	    var trAwayTeam = "<td><b>Away Team</b></td>";
+	    var trHomeTeam = "<td><b>Home Team</b></td></tr>";
+	    $("#mytable").append(trID + trDate + trAwayTeam + trHomeTeam);
+	    
+	    for (var i = 0; i < parseddata.length; i++) {
+	    
+	      var tr = "<tr>";
+	      var td1 = "<td><a href='#' onclick='idfunction("+ parseddata[i].id +")' >" + parseddata[i].id + "</td>";
+	      var td2 = "<td>" + parseddata[i]["gameDate"] + "</td>";
+	      var td3 = "<td>" + parseddata[i].awayTeam["fullName"] + "</td>";
+	      var td4 = "<td>" + parseddata[i].homeTeam["fullName"] + "</td></tr>";
+
+	      $("#mytable").append(tr + td1 + td2 + td3 + td4);
+
+	   }
+	  });
+	});
+	
+function idfunction(idvalue) {
+	
+	$.get("http://localhost:9000/list/" + idvalue, function(data, status) {
+
+		var parsedgamedata = JSON.parse(data);
+	    var tbl2 = $("<table/>").attr("id", "gameTable");
+	    if(!document.getElementById('gameTable'))
+	    {$("#gameDetails").append(tbl2);}
+	    else{
+	    	$("#gameTable").html('')
+	    }
+	    var trID = "<tr><td><b> Scout ID </b></td>";
+	    var trDate = "<td><b>Date Assigned</b></td>";
+	    var trScout = "<td><b>Scout Name</b></td></tr>";
+	   
+
+	    parsedgamedata.assignments.forEach(function(x){
+	    	  var tr = "<tr>";
+		      var td1 = "<td>" + x.id + "</td>";
+		      var td2 = "<td>" + x.assignedAt + "</td>";
+		      var td3 = "<td>" + x.scout.fullName + "</td></tr>";
+		      $("#gameTable").append(tr + td1 + td2 + td3 );
+	    	  })
+	    	  $("#gameTable").prepend(trID + trDate + trScout);
+	          location.href = '#gameTable' ;
+	  });
+	 
+};
+
+
+</script>
+
+
+</body>
+</html>
